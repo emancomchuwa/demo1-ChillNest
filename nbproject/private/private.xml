@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group name="PRJ301">
+            <file>file:/E:/DauTay/DauTay/src/java/Controller/RegisterController.java</file>
+            <file>file:/E:/DauTay/DauTay/src/java/Controller/LoginController.java</file>
+            <file>file:/E:/DauTay/DauTay/web/register.jsp</file>
+            <file>file:/E:/DauTay/DauTay/src/java/Model/User.java</file>
+            <file>file:/E:/DauTay/DauTay/src/java/Dal/DBContext.java</file>
+            <file>file:/E:/DauTay/DauTay/src/java/Controller/LogoutController.java</file>
+            <file>file:/E:/DauTay/DauTay/src/java/Dal/UserDAO.java</file>
+            <file>file:/E:/DauTay/DauTay/web/home.jsp</file>
+        </group>
+    </open-files>
+</project-private>
