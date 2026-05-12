@@ -33,7 +33,7 @@ public class RegisterController extends HttpServlet {
         String confirm = request.getParameter("confirm");
         
         if (!pass.equals(confirm)) {
-            request.setAttribute("error", "Mật khẩu xác nhận không khớp!");
+            request.setAttribute("error", "Confirm password does not match!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
@@ -42,14 +42,14 @@ public class RegisterController extends HttpServlet {
         
         // 1. Check Username
         if (dao.checkUsernameExist(user)) {
-            request.setAttribute("error", "Tên đăng nhập này đã tồn tại!");
+            request.setAttribute("error", "This username already exists!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
         
         // 2. Check Email
         if (dao.checkEmailExist(email)) {
-            request.setAttribute("error", "Email này đã được sử dụng!");
+            request.setAttribute("error", "This email is already in use!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
@@ -58,7 +58,7 @@ public class RegisterController extends HttpServlet {
         if (dao.register(u)) {
             response.sendRedirect("login.jsp?success=true");
         } else {
-            request.setAttribute("error", "Đăng ký thất bại. Vui lòng thử lại!");
+            request.setAttribute("error", "Registration failed. Please try again!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }
     }

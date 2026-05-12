@@ -636,3 +636,95 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+
+/* User Menu Container */
+.user-menu-container {
+    position: fixed;
+    bottom: 110px; /* Vị trí phía trên nút */
+    left: 40px;
+    z-index: 999998;
+    display: none; /* Mặc định ẩn */
+    animation: slideUp 0.2s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.user-menu-container.show {
+    display: block;
+}
+
+/* GitHub Style Input/Value effect */
+.input {
+  display: flex;
+  flex-direction: column;
+  width: 220px;
+  background-color: #0D1117;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border: 1px solid #30363d;
+}
+
+.value {
+  background-color: transparent;
+  border: none;
+  padding: 10px 15px;
+  color: #c9d1d9;
+  display: flex;
+  align-items: center;
+  position: relative;
+  gap: 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: left;
+  font-family: 'Inter', sans-serif;
+}
+
+.value:not(:active):hover,
+.value:focus {
+  background-color: #21262C;
+  color: white;
+}
+
+.value:focus,
+.value:active {
+  background-color: #1A1F24;
+  outline: none;
+}
+
+.value::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 4px;
+  height: 60%;
+  background-color: #2F81F7;
+  border-radius: 5px;
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity 0.2s;
+}
+
+.value:focus::before,
+.value:active::before {
+  opacity: 1;
+}
+
+.value i {
+  width: 16px;
+  text-align: center;
+  font-size: 14px;
+  color: #8b949e;
+}
+
+.value:hover i {
+    color: white;
+}

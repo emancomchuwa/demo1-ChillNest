@@ -38,7 +38,7 @@ public class LoginController extends HttpServlet {
             response.sendRedirect("home.jsp");
         } else {
             // Login failed
-            request.setAttribute("error", "Email hoặc mật khẩu không đúng!");
+            request.setAttribute("error", "Invalid email or password!");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }

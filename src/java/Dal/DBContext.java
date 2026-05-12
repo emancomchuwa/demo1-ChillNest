@@ -7,34 +7,34 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Lớp thiết lập kết nối tới cơ sở dữ liệu SQL Server.
- * Các lớp DAO khác sẽ kế thừa lớp này để sử dụng đối tượng 'connection'.
+ * Class to establish connection to SQL Server database.
+ * Other DAO classes will inherit this class to use the 'connection' object.
  */
 public class DBContext {
     protected Connection connection;
 
     /**
-     * Constructor khởi tạo kết nối database.
+     * Constructor initializes database connection.
      */
     public DBContext() {
         try {
-            // CẤU HÌNH KẾT NỐI DATABASE
-            // Bạn cần thay đổi thông tin bên dưới cho khớp với máy của mình
+            // DATABASE CONNECTION CONFIGURATION
+            // Change the information below to match your local setup
             String user = "sa";
             String pass = "sa"; 
             String databaseName = "chill_nest";
             
-            // Cấu hình URL kết nối
+            // Connection URL configuration
             String url = "jdbc:sqlserver://localhost:1433;databaseName=" + databaseName + ";encrypt=true;trustServerCertificate=true;";
 
-            // Nạp Driver SQL Server
+            // Load SQL Server Driver
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 
-            // Mở kết nối
+            // Open Connection
             connection = DriverManager.getConnection(url, user, pass);
         } catch (ClassNotFoundException | SQLException ex) {
-            // Ghi log chi tiết để dễ debug
-            Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, "Lỗi kết nối Database! Vui lòng kiểm tra lại password trong DBContext.java", ex);
+            // Log detailed error for debugging
+            Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, "Database connection failed! Please check your credentials in DBContext.java", ex);
         }
     }
 }

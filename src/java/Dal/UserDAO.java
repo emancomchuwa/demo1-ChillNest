@@ -12,7 +12,7 @@ public class UserDAO extends DBContext {
      */
     public boolean register(User user) {
         if (connection == null) {
-            System.err.println(">>> LỖI: Không thể thực hiện Đăng ký do không có kết nối Database!");
+            System.err.println(">>> ERROR: Cannot register because database connection is null!");
             return false;
         }
         String sql = "INSERT INTO users (username, email, password, full_name) VALUES (?, ?, ?, ?)";
@@ -36,7 +36,7 @@ public class UserDAO extends DBContext {
      */
     public boolean checkEmailExist(String email) {
         if (connection == null) {
-            System.err.println(">>> LỖI: Không thể kiểm tra Email do không có kết nối Database!");
+            System.err.println(">>> ERROR: Cannot check email because database connection is null!");
             return false;
         }
         String sql = "SELECT * FROM users WHERE email = ?";
@@ -58,7 +58,7 @@ public class UserDAO extends DBContext {
      */
     public boolean checkUsernameExist(String username) {
         if (connection == null) {
-            System.err.println(">>> LỖI: Không thể kiểm tra Username do không có kết nối Database!");
+            System.err.println(">>> ERROR: Cannot check username because database connection is null!");
             return false;
         }
         String sql = "SELECT * FROM users WHERE username = ?";
@@ -79,7 +79,7 @@ public class UserDAO extends DBContext {
      */
     public User login(String email, String password) {
         if (connection == null) {
-            System.err.println(">>> LỖI: Không thể thực hiện Đăng nhập do không có kết nối Database!");
+            System.err.println(">>> ERROR: Cannot login because database connection is null!");
             return null;
         }
         String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
@@ -100,5 +100,26 @@ public class UserDAO extends DBContext {
             System.out.println("Login Error: " + e.getMessage());
         }
         return null;
+    }
+
+    /**
+     * Update password for a user by email
+     */
+    public boolean updatePassword(String email, String newPassword) {
+        if (connection == null) {
+            System.err.println(">>> ERROR: Cannot update password because database connection is null!");
+            return false;
+        }
+        String sql = "UPDATE users SET password = ? WHERE email = ?";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setString(1, newPassword);
+            st.setString(2, email);
+            int rowsAffected = st.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.out.println("UpdatePassword Error: " + e.getMessage());
+        }
+        return false;
     }
 }
