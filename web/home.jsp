@@ -133,67 +133,7 @@
     </footer>
 
 
-    <div id="userMenu" class="user-menu-container">
-        <div class="input">
-            <button class="value" onclick="window.location.href='profile.jsp'">
-                <i class="fa-regular fa-user"></i>
-                Public profile
-            </button>
-            <button class="value" onclick="window.location.href='account.jsp'">
-                <i class="fa-solid fa-gear"></i>
-                Account
-            </button>
-            <button class="value">
-                <i class="fa-solid fa-pen-nib"></i>
-                Appearance
-            </button>
-            <button class="value">
-                <i class="fa-solid fa-universal-access"></i>
-                Accessibility
-            </button>
-            <button class="value">
-                <i class="fa-regular fa-bell"></i>
-                Notifications
-            </button>
-            <hr style="border: 0; border-top: 1px solid #30363d; margin: 8px 0;">
-            <button class="value" onclick="window.location.href='LogoutController'">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                Logout
-            </button>
-        </div>
-    </div>
-
-    <button class="uiverse-button fixed-bottom-left" onclick="toggleUserMenu(event)">
-
-        <svg class="sparkle" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path class="path" d="M12 2L14.7106 9.21058H21.8421L16.2658 13.7894L18.9764 21L12 16.4211L5.02361 21L7.73419 13.7894L2.15789 9.21058H9.28939L12 2Z" fill="currentColor"></path>
-            <path class="path" d="M5.5 2L6.17764 3.80264H7.96053L6.56645 4.94736L7.24409 6.75L5.5 5.60528L3.75591 6.75L4.43355 4.94736L3.03947 3.80264H4.82236L5.5 2Z" fill="currentColor"></path>
-            <path class="path" d="M18.5 4L19.1776 5.80264H20.9605L19.5664 6.94736L20.2441 8.75L18.5 7.60528L16.7559 8.75L17.4336 6.94736L16.0395 5.80264H17.8224L18.5 4Z" fill="currentColor"></path>
-        </svg>
-        <span class="text_button"><%= (user == null) ? "Register" : user.getUsername() %></span>
-        <div class="dots_border"></div>
-    </button>
-
     <script>
-        function toggleUserMenu(event) {
-            event.stopPropagation();
-            <% if (user == null) { %>
-                window.location.href = 'register.jsp';
-            <% } else { %>
-                const menu = document.getElementById('userMenu');
-                menu.classList.toggle('show');
-            <% } %>
-        }
-
-        // Close menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const menu = document.getElementById('userMenu');
-            const button = document.querySelector('.uiverse-button');
-            if (menu && !menu.contains(event.target) && !button.contains(event.target)) {
-                menu.classList.remove('show');
-            }
-        });
-
         // Smooth scroll header effect
         window.addEventListener('scroll', function() {
             const header = document.querySelector('header');
