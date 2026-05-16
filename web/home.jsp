@@ -1,10 +1,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="Model.User" %>
+<%@ page import="java.util.List" %>
+<%@ page import="Model.Product" %>
+<%@ page import="Dal.ProductDAO" %>
 <%
     User user = (User) session.getAttribute("user");
 %>
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,12 +29,18 @@
             </ul>
         </nav>
         <div class="header-right">
-            <button class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <form action="search" method="get" class="search-bar" style="display: flex; align-items: center; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden; background: #fff; min-width: 250px;">
+                <input type="text" name="query" placeholder="Search products..." style="border: none; padding: 8px 15px; outline: none; flex-grow: 1; font-size: 0.85rem; width: 100%;">
+                <button type="submit" style="border: none; background: transparent; padding: 8px 15px; cursor: pointer; color: #2c5282;"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </form>
             <% if (user == null) { %>
                 <a href="login.jsp" class="shop-now-btn">LOGIN</a>
             <% } else { %>
                 <div class="user-info" style="display: flex; align-items: center; gap: 15px;">
-                    <span style="font-weight: 600; font-size: 0.9rem; color: #2c5282;">Hi, <%= user.getFullName() %></span>
+                    <a href="ProfileController" style="color: #2c5282; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-circle-user" style="font-size: 1.5rem;"></i>
+                        <span style="font-weight: 600; font-size: 0.9rem;">Hi, <%= user.getFullName() %></span>
+                    </a>
                     <a href="LogoutController" style="font-size: 0.8rem; color: #666; text-decoration: underline;">Logout</a>
                 </div>
             <% } %>
@@ -71,20 +80,87 @@
         </section>
 
         <section class="section">
-            <div class="product-grid">
-                <div class="product-card">
-                    <div class="product-image"><img src="https://images.unsplash.com/photo-1581783898377-1c85bf937427?auto=format&fit=crop&q=80&w=800" alt="Azure Ceramic Vase"></div>
-                    <div class="product-info"><h3>Azure Ceramic Vase</h3><p>Artistic blue ceramic vase</p><div class="product-price">1,250,000 VND</div></div>
+            <div class="section-title-wrapper" style="justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 20px; flex-grow: 1;">
+                    <h2 class="section-title">Featured Products</h2>
+                    <div class="title-line"></div>
                 </div>
-                <div class="product-card">
-                    <div class="product-image"><img src="https://images.unsplash.com/photo-1534073828943-f801091bb18c?auto=format&fit=crop&q=80&w=800" alt="Minimalist Lamp"></div>
-                    <div class="product-info"><h3>Minimalist Lamp</h3><p>Modern minimalist desk lamp</p><div class="product-price">2,400,000 VND</div></div>
-                </div>
-                <div class="product-card">
-                    <div class="product-image"><img src="https://images.unsplash.com/photo-1584100936595-c0654b55a2e6?auto=format&fit=crop&q=80&w=800" alt="Navy Silk Pillow"></div>
-                    <div class="product-info"><h3>Navy Silk Pillow</h3><p>Navy blue silk pillow</p><div class="product-price">650,000 VND</div></div>
-                </div>
+                <form action="search" method="get" class="search-bar" style="display: flex; align-items: center; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden; background: #fff; margin-left: 20px; min-width: 250px;">
+                    <input type="text" name="query" placeholder="Search products..." style="border: none; padding: 10px 15px; outline: none; flex-grow: 1; font-size: 0.9rem; width: 100%;">
+                    <button type="submit" style="border: none; background: transparent; padding: 10px 15px; cursor: pointer; color: #2c5282;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </form>
             </div>
+            <div class="product-grid">
+                <%
+                    int homePageNum = 1;
+                    String pStr = request.getParameter("page");
+                    if (pStr != null && !pStr.isEmpty()) {
+                        try {
+                            homePageNum = Integer.parseInt(pStr);
+                        } catch (Exception e) {}
+                    }
+                    ProductDAO dao = new ProductDAO();
+                    int homePageSize = 9;
+                    int hTotalProducts = dao.getTotalProducts();
+                    int hTotalPages = (int) Math.ceil((double) hTotalProducts / homePageSize);
+                    List<Product> homeProducts = dao.getProductsByPage(homePageNum, homePageSize);
+                    
+                    for (Product p : homeProducts) {
+                %>
+                <div class="product-card">
+                    <div class="product-image">
+                        <% if (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) { %>
+                            <img src="<%= p.getImageUrl() %>" alt="<%= p.getName() %>">
+                        <% } else { %>
+                            <div style="width: 100%; height: 100%; background-color: #f4f4f4; display: flex; align-items: center; justify-content: center; color: #ccc;">
+                                <i class="fa-solid fa-couch" style="font-size: 3rem;"></i>
+                            </div>
+                        <% } %>
+                    </div>
+                    <div class="product-info">
+                        <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="<%= p.getName() %>"><%= p.getName() %></h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Material: <%= p.getMaterial() %></p>
+                        <div class="product-price"><%= p.getFormattedPrice() %></div>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+
+            <!-- Pagination Controls for Home Page -->
+            <% if (hTotalPages > 1) { %>
+            <div class="pagination" style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 40px; width: 100%;">
+                <% if (homePageNum > 1) { %>
+                <a href="home.jsp?page=<%= homePageNum - 1 %>" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; background: white; color: var(--text-main); text-decoration: none; border: 1px solid var(--gray-medium); transition: 0.2s;"><i class="fa-solid fa-chevron-left"></i></a>
+                <% } %>
+                
+                <% 
+                    int startPage = Math.max(1, homePageNum - 2);
+                    int endPage = Math.min(hTotalPages, homePageNum + 2);
+                    
+                    if (startPage > 1) { 
+                %>
+                        <a href="home.jsp?page=1" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; background: white; color: var(--text-main); text-decoration: none; border: 1px solid var(--gray-medium); transition: 0.2s;">1</a>
+                        <% if (startPage > 2) { %> <span style="color: var(--text-muted);">...</span> <% } %>
+                <% 
+                    }
+                    
+                    for (int i = startPage; i <= endPage; i++) { 
+                %>
+                    <a href="home.jsp?page=<%= i %>" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; text-decoration: none; transition: 0.2s; <%= (i == homePageNum) ? "background: var(--accent-color); color: white; border: 1px solid var(--accent-color);" : "background: white; color: var(--text-main); border: 1px solid var(--gray-medium);" %>"><%= i %></a>
+                <% 
+                    }
+                    
+                    if (endPage < hTotalPages) { 
+                %>
+                        <% if (endPage < hTotalPages - 1) { %> <span style="color: var(--text-muted);">...</span> <% } %>
+                        <a href="home.jsp?page=<%= hTotalPages %>" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; background: white; color: var(--text-main); text-decoration: none; border: 1px solid var(--gray-medium); transition: 0.2s;"><%= hTotalPages %></a>
+                <% } %>
+                
+                <% if (homePageNum < hTotalPages) { %>
+                <a href="home.jsp?page=<%= homePageNum + 1 %>" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; background: white; color: var(--text-main); text-decoration: none; border: 1px solid var(--gray-medium); transition: 0.2s;"><i class="fa-solid fa-chevron-right"></i></a>
+                <% } %>
+            </div>
+            <% } %>
         </section>
 
         <section class="features-grid">
