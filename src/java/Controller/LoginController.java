@@ -35,6 +35,11 @@ public class LoginController extends HttpServlet {
             // Login success
             HttpSession session = request.getSession();
             session.setAttribute("user", u);
+            
+            // Load persistent cart from database
+            Dal.CartDAO cartDAO = new Dal.CartDAO();
+            session.setAttribute("cart", cartDAO.getCartByUserId(u.getId()));
+            
             response.sendRedirect("home.jsp");
         } else {
             // Login failed

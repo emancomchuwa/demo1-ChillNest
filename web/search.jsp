@@ -1,20 +1,32 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="Model.User" %>
+<%@ page import="Model.CartItem" %>
 <%@ page import="java.util.List" %>
 <%
     User user = (User) session.getAttribute("user");
     List<Model.Product> products = (List<Model.Product>) request.getAttribute("products");
     Integer currentPage = (Integer) request.getAttribute("currentPage");
-    Integer totalPages = (Integer) request.getAttribute("totalPages");
+    Integer totalPages  = (Integer) request.getAttribute("totalPages");
     Integer totalProducts = (Integer) request.getAttribute("totalProducts");
     String query = (String) request.getAttribute("query");
-    
+    String room  = (String) request.getAttribute("room");
+
     if (products == null) {
         products = new java.util.ArrayList<>();
-        currentPage = 1;
-        totalPages = 1;
+        currentPage   = 1;
+        totalPages    = 1;
         totalProducts = 0;
         query = "";
+    }
+    if (room  == null) room  = "";
+    if (query == null) query = "";
+
+    List<CartItem> sessionCart = (List<CartItem>) session.getAttribute("cart");
+    int cartCount = 0;
+    if (sessionCart != null) {
+        for (CartItem item : sessionCart) {
+            cartCount += item.getQuantity();
+        }
     }
 %>
 <!DOCTYPE html>
@@ -105,33 +117,7 @@
             font-size: 0.95rem;
         }
 
-        .quick-filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-        }
 
-        .quick-filter-chip {
-            background: var(--search-secondary);
-            color: var(--search-primary);
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: 1px solid transparent;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .quick-filter-chip:hover {
-            border-color: var(--search-primary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(124, 77, 255, 0.15);
-        }
 
         /* Sidebar Filter */
         .filter-sidebar {
@@ -205,7 +191,42 @@
             height: 16px;
             cursor: pointer;
         }
-        
+
+        /* Room filter links */
+        .room-filter-list { list-style: none; padding: 0; }
+        .room-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 0;
+            text-decoration: none;
+            color: var(--search-text);
+            font-size: 0.95rem;
+            border-radius: 6px;
+            transition: color 0.2s;
+        }
+        .room-link:hover { color: var(--search-primary); }
+        .room-link.room-active {
+            color: var(--search-primary);
+            font-weight: 600;
+        }
+        .room-checkbox-icon { font-size: 1rem; color: #ccc; }
+        .room-link.room-active .room-checkbox-icon { color: var(--search-primary); }
+        .clear-room-filter {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 0.82rem;
+            color: #e53e3e;
+            text-decoration: none;
+            padding: 4px 10px;
+            border: 1px solid #fed7d7;
+            border-radius: 20px;
+            background: #fff5f5;
+            transition: all 0.2s;
+        }
+        .clear-room-filter:hover { background: #fed7d7; }
+
+
         .category-list a {
             display: block;
             padding: 8px 0;
@@ -442,7 +463,7 @@
 <body>
     <!-- HEADER -->
     <header>
-        <div class="logo">Chill Nest</div>
+        <div class="logo"><a href="home.jsp">Chill Nest</a></div>
         <nav>
             <ul>
                 <li><a href="#">COLLECTION</a></li>
@@ -453,6 +474,14 @@
             </ul>
         </nav>
         <div class="header-right">
+            <div style="margin-right: 15px; position: relative;">
+                <a href="cart" class="header-cart-wrapper" style="color: #2c5282; font-size: 1.3rem; text-decoration: none;" title="View Cart">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <% if (cartCount > 0) { %>
+                        <span class="header-cart-badge"><%= cartCount %></span>
+                    <% } %>
+                </a>
+            </div>
             <form action="search.jsp" method="get" class="search-bar" style="display: flex; align-items: center; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden; background: #fff; min-width: 250px;">
                 <input type="text" name="query" placeholder="Search products..." style="border: none; padding: 8px 15px; outline: none; flex-grow: 1; font-size: 0.85rem; width: 100%;">
                 <button type="submit" style="border: none; background: transparent; padding: 8px 15px; cursor: pointer; color: #2c5282;"><i class="fa-solid fa-magnifying-glass"></i></button>
@@ -483,13 +512,7 @@
             <div class="search-results-meta">
                 <h1>Search Results: <span>“<%= query %>”</span></h1>
                 <p><%= totalProducts %> products found</p>
-                <div class="quick-filters">
-                    <span class="quick-filter-chip">Hot 🔥</span>
-                    <span class="quick-filter-chip">Bedroom</span>
-                    <span class="quick-filter-chip">Wood</span>
-                    <span class="quick-filter-chip">Under 1M</span>
-                    <span class="quick-filter-chip">Minimal</span>
-                </div>
+
             </div>
         </div>
 
@@ -512,15 +535,24 @@
 
             <div class="filter-group">
                 <div class="filter-title">Space / Room <i class="fa-solid fa-chevron-up"></i></div>
-                <ul class="filter-list">
-                    <li><label class="filter-label"><input type="checkbox"> Bedroom</label></li>
-                    <li><label class="filter-label"><input type="checkbox"> Living Room</label></li>
-                    <li><label class="filter-label"><input type="checkbox"> Workspace</label></li>
-                    <li><label class="filter-label"><input type="checkbox"> Gaming Room</label></li>
-                    <li><label class="filter-label"><input type="checkbox"> Studio</label></li>
-                    <li><label class="filter-label"><input type="checkbox"> Mini Apartment</label></li>
-                    <li><label class="filter-label"><input type="checkbox"> Cafe</label></li>
+                <ul class="filter-list room-filter-list">
+                    <% String[] roomOpts = {"Bedroom","Living Room","Workspace","Gaming Room","Studio","Mini Apartment","Cafe"};
+                       for (String ro : roomOpts) {
+                           boolean active = ro.equals(room); %>
+                    <li>
+                        <a href="search?query=<%= query %>&room=<%= active ? "" : java.net.URLEncoder.encode(ro, "UTF-8") %>"
+                           class="filter-label room-link <%= active ? "room-active" : "" %>">
+                            <span class="room-checkbox-icon"><i class="fa-solid <%= active ? "fa-square-check" : "fa-square" %>"></i></span>
+                            <%= ro %>
+                        </a>
+                    </li>
+                    <% } %>
                 </ul>
+                <% if (!room.isEmpty()) { %>
+                <a href="search?query=<%= query %>" class="clear-room-filter">
+                    <i class="fa-solid fa-xmark"></i> Clear room filter
+                </a>
+                <% } %>
             </div>
             
             <div class="filter-group">
@@ -630,7 +662,7 @@
             <% } else { %>
             <div class="search-results-grid">
                 <% for (Model.Product p : products) { %>
-                <div class="s-product-card">
+                <div class="s-product-card" onclick="window.location.href='product-detail?id=<%= p.getId() %>'">
                     <% if (p.isIsHot()) { %>
                     <div class="s-badge-hot"><i class="fa-solid fa-fire"></i> HOT</div>
                     <% } else if (p.isIsNew()) { %>
@@ -641,7 +673,7 @@
                             <img src="<%= p.getImageUrl() %>" alt="<%= p.getName() %>">
                         <% } else { %>
                             <div style="width: 100%; height: 100%; background-color: #f4f4f4; display: flex; align-items: center; justify-content: center; color: #ccc;">
-                                <i class="fa-solid fa-image" style="font-size: 3rem;"></i>
+                                <i class="fa-solid fa-couch" style="font-size: 3rem;"></i>
                             </div>
                         <% } %>
                     </div>
@@ -655,7 +687,7 @@
                         </div>
                         <div class="s-product-bottom">
                             <div class="s-product-price"><%= p.getFormattedPrice() %></div>
-                            <button class="s-add-cart-btn" title="Add to cart">
+                            <button class="s-add-cart-btn" title="Add to cart" onclick="event.stopPropagation(); window.location.href='cart?action=add&id=<%= p.getId() %>&qty=1'">
                                 <i class="fa-solid fa-cart-plus"></i>
                             </button>
                         </div>
@@ -708,7 +740,7 @@
         <div class="container">
             <div class="footer-main">
                 <div class="footer-logo-section">
-                    <div class="logo">Chill Nest</div>
+                    <div class="logo"><a href="home.jsp">Chill Nest</a></div>
                     <p>The art of creating quiet and luxurious living spaces.</p>
                 </div>
                 <div class="footer-col">
@@ -730,6 +762,7 @@
         </div>
     </footer>
 
+    <script src="chat-widget.js"></script>
     <script>
         // Smooth scroll header effect
         window.addEventListener('scroll', function() {

@@ -289,5 +289,6 @@
             <p class="footer-text">Remember your password? <a href="LoginController">Login now</a></p>
         </div>
     </div>
+    <script src="chat-widget.js"></script>
 </body>
 </html>

@@ -1,0 +1,4 @@
+build/
+dist/
+nbproject/private/
+web/WEB-INF/google-config.properties

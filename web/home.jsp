@@ -2,9 +2,17 @@
 <%@ page import="Model.User" %>
 <%@ page import="java.util.List" %>
 <%@ page import="Model.Product" %>
+<%@ page import="Model.CartItem" %>
 <%@ page import="Dal.ProductDAO" %>
 <%
     User user = (User) session.getAttribute("user");
+    List<CartItem> sessionCart = (List<CartItem>) session.getAttribute("cart");
+    int cartCount = 0;
+    if (sessionCart != null) {
+        for (CartItem item : sessionCart) {
+            cartCount += item.getQuantity();
+        }
+    }
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -18,7 +26,7 @@
 </head>
 <body>
     <header>
-        <div class="logo">Chill Nest</div>
+        <div class="logo"><a href="home.jsp">Chill Nest</a></div>
         <nav>
             <ul>
                 <li><a href="#">COLLECTION</a></li>
@@ -29,6 +37,14 @@
             </ul>
         </nav>
         <div class="header-right">
+            <div style="margin-right: 15px; position: relative;">
+                <a href="cart" class="header-cart-wrapper" style="color: #2c5282; font-size: 1.3rem; text-decoration: none;" title="View Cart">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <% if (cartCount > 0) { %>
+                        <span class="header-cart-badge"><%= cartCount %></span>
+                    <% } %>
+                </a>
+            </div>
             <form action="search" method="get" class="search-bar" style="display: flex; align-items: center; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden; background: #fff; min-width: 250px;">
                 <input type="text" name="query" placeholder="Search products..." style="border: none; padding: 8px 15px; outline: none; flex-grow: 1; font-size: 0.85rem; width: 100%;">
                 <button type="submit" style="border: none; background: transparent; padding: 8px 15px; cursor: pointer; color: #2c5282;"><i class="fa-solid fa-magnifying-glass"></i></button>
@@ -61,15 +77,15 @@
                 <div class="title-line"></div>
             </div>
             <div class="category-grid">
-                <div class="category-item">
+                <div class="category-item" onclick="window.location.href='search?room=Living Room'" style="cursor: pointer;">
                     <img src="img/phong-khach-mau-do-19.jpg" alt="Living Room">
                     <div class="category-label"><span>Somewhere</span><h3>Living Room</h3></div>
                 </div>
-                <div class="category-item">
+                <div class="category-item" onclick="window.location.href='search?room=Bedroom'" style="cursor: pointer;">
                     <img src="img/thiet-ke-phong-ngu-mau-do-19.jpg" alt="Bedroom">
                     <div class="category-label"><h3>Bedroom</h3></div>
                 </div>
-                <div class="category-item">
+                <div class="category-item" onclick="window.location.href='search?room=Workspace'" style="cursor: pointer;">
                     <img src="img/phong-lam-viec-do-19.jpg" alt="Workplace">
                     <div class="category-label"><h3>Workplace</h3></div>
                 </div>
@@ -107,7 +123,7 @@
                     
                     for (Product p : homeProducts) {
                 %>
-                <div class="product-card">
+                <div class="product-card" onclick="window.location.href='product-detail?id=<%= p.getId() %>'" style="cursor: pointer;">
                     <div class="product-image">
                         <% if (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) { %>
                             <img src="<%= p.getImageUrl() %>" alt="<%= p.getName() %>">
@@ -186,7 +202,7 @@
         <div class="container">
             <div class="footer-main">
                 <div class="footer-logo-section">
-                    <div class="logo">Chill Nest</div>
+                    <div class="logo"><a href="home.jsp">Chill Nest</a></div>
                     <p>The art of creating quiet and luxurious living spaces.</p>
                 </div>
                 <div class="footer-col">
@@ -209,6 +225,7 @@
     </footer>
 
 
+    <script src="chat-widget.js"></script>
     <script>
         // Smooth scroll header effect
         window.addEventListener('scroll', function() {

@@ -27,7 +27,12 @@ public class ProfileController extends HttpServlet {
         // Fetch fresh data from DB
         UserDAO dao = new UserDAO();
         User freshUser = dao.getUserById(user.getId());
-        
+
+        // Fallback for Google users whose id may not be set
+        if (freshUser == null && user.getEmail() != null) {
+            freshUser = dao.getUserByEmail(user.getEmail());
+        }
+
         if (freshUser != null) {
             session.setAttribute("user", freshUser);
             request.getRequestDispatcher("profile.jsp").forward(request, response);

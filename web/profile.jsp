@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="Model.User" %>
+<%@ page import="Model.CartItem" %>
+<%@ page import="java.util.List" %>
 <%
     User user = (User) session.getAttribute("user");
     if (user == null) {
@@ -8,6 +10,13 @@
     }
     String message = (String) request.getAttribute("message");
     String error = (String) request.getAttribute("error");
+    List<CartItem> sessionCart = (List<CartItem>) session.getAttribute("cart");
+    int cartCount = 0;
+    if (sessionCart != null) {
+        for (CartItem item : sessionCart) {
+            cartCount += item.getQuantity();
+        }
+    }
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -155,6 +164,14 @@
             </ul>
         </nav>
         <div class="header-right">
+            <div style="margin-right: 15px; position: relative;">
+                <a href="cart" class="header-cart-wrapper" style="color: #2c5282; font-size: 1.3rem; text-decoration: none;" title="View Cart">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <% if (cartCount > 0) { %>
+                        <span class="header-cart-badge"><%= cartCount %></span>
+                    <% } %>
+                </a>
+            </div>
             <div class="user-info" style="display: flex; align-items: center; gap: 15px;">
                 <a href="ProfileController" style="color: #2c5282; text-decoration: none; display: flex; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-circle-user" style="font-size: 1.5rem;"></i>
@@ -267,7 +284,7 @@
         <div class="container">
             <div class="footer-main">
                 <div class="footer-logo-section">
-                    <div class="logo">Chill Nest</div>
+                    <div class="logo"><a href="home.jsp">Chill Nest</a></div>
                     <p>The art of creating quiet and luxurious living spaces.</p>
                 </div>
                 <div class="footer-col">
@@ -284,5 +301,6 @@
             </div>
         </div>
     </footer>
+    <script src="chat-widget.js"></script>
 </body>
 </html>
